@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить операцию</title>
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="form.html" class="active">Добавить</a>
+            <a href="goals.html">Цели</a>
+            <a href="stats.html">Статистика</a>
+            <a href="about.html">О проекте</a>
+            <button onclick="toggleTheme()" class="theme-btn" style="background:transparent; border:none; font-size:1.2rem; cursor:pointer; display:flex; align-items:center;"><span class="theme-toggle-icon">🌙</span></button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Новая транзакция</h1>
+        <p class="page-subtitle">Заполните форму ниже для учета ваших финансов</p>
+
+        <form id="form" class="card form-wrapper">
+            <div class="form-header">Детали транзакции</div>
+
+            <div class="type-switcher">
+                <input type="radio" id="type-expense" name="type" value="expense" checked>
+                <label for="type-expense" class="switcher-btn expense-btn">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7L17 17M17 17H7M17 17V7"/></svg>
+                    Расход
+                </label>
+                
+                <input type="radio" id="type-income" name="type" value="income">
+                <label for="type-income" class="switcher-btn income-btn">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                    Доход
+                </label>
+            </div>
+
+            <div class="input-group">
+                <label>Название</label>
+                <input type="text" id="title" class="input-control" placeholder="Напр. Продукты, Зарплата" autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>Сумма (₸)</label>
+                <input type="number" id="amount" class="input-control" placeholder="0">
+            </div>
+
+            <div class="input-group">
+                <label>Дата</label>
+                <input type="date" id="date" class="input-control">
+            </div>
+
+            <div class="input-group">
+                <label>Комментарий</label>
+                <textarea id="note" class="input-control" placeholder="Необязательно..."></textarea>
+            </div>
+
+            <div class="checkbox-group">
+                <label class="checkbox-label" for="isRecurring">
+                    <input type="checkbox" id="isRecurring" onchange="document.getElementById('intervalGroup').style.display = this.checked ? 'block' : 'none';">
+                    Сделать операцию регулярной
+                </label>
+                
+                <div id="intervalGroup" style="display: none; margin-top: 1rem;">
+                    <div class="input-group">
+                        <label>Частота повторения</label>
+                        <select id="recurringInterval" class="input-control">
+                            <option value="daily">Каждый день</option>
+                            <option value="weekly">Раз в неделю</option>
+                            <option value="biweekly">Раз в 2 недели</option>
+                            <option value="monthly" selected>Раз в месяц</option>
+                            <option value="yearly">Раз в год</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                Сохранить транзакцию
+            </button>
+        </form>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h4>Финансовый контроль</h4>
+                <p>Ваш современный и надежный персональный помощник для учета финансов и бюджетирования.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Контакты</h4>
+                <div class="footer-links-list">
+                    <a href="mailto:nsb.niki.nsb@gmail.com">nsb.niki.nsb@gmail.com</a>
+                    <a href="tel:+79000000000">+7 (900) 000-00-00</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Система персонального финансового планирования</p>
+        </div>
+    </footer>
+
+    <script src="js/storage.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/form.js"></script>
+</body>
+</html>

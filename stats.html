@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статистика</title>
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="form.html">Добавить</a>
+            <a href="goals.html">Цели</a>
+            <a href="stats.html" class="active">Статистика</a>
+            <a href="about.html">О проекте</a>
+            <button onclick="toggleTheme()" class="theme-btn" style="background:transparent; border:none; font-size:1.2rem; cursor:pointer; display:flex; align-items:center;"><span class="theme-toggle-icon">🌙</span></button>
+        </nav>
+    </header>
+
+    <style>
+        .metrics-ribbon {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .metric-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-card);
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: var(--card-backdrop);
+            -webkit-backdrop-filter: var(--card-backdrop);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease;
+        }
+        .metric-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .metric-icon.income { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .metric-icon.expense { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        .metric-icon.balance { background: rgba(79, 70, 229, 0.1); color: #4f46e5; }
+        .metric-info .label { color: var(--color-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 0.25rem; }
+        .metric-info .value { font-size: 1.5rem; font-weight: 700; color: var(--color-title); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        @media (max-width: 900px) {
+            .metrics-ribbon {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .chart-card {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-card);
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: var(--card-backdrop);
+            -webkit-backdrop-filter: var(--card-backdrop);
+        }
+        .chart-card h3 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: var(--color-title);
+        }
+        .chart-wrapper {
+            flex: 1;
+            position: relative;
+            min-height: 280px;
+        }
+        
+        .top-expense-item {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.25rem;
+        }
+        .top-expense-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .top-expense-title { display: flex; align-items: center; gap: 12px; }
+        .top-expense-icon {
+            width: 36px; height: 36px; border-radius: 8px; background: rgba(239, 68, 68, 0.1); color: #ef4444; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;
+        }
+        .top-expense-amount { font-weight: 700; color: var(--color-title); }
+        .top-expense-bar-bg {
+            height: 6px; background: var(--bg-main); border-radius: 3px; overflow: hidden;
+        }
+        .top-expense-bar-fill {
+            height: 100%; border-radius: 3px; background: linear-gradient(90deg, #f43f5e, #ef4444); width: 0%; transition: width 1s ease-out;
+        }
+    </style>
+
+    <main class="container">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h1 class="page-title" style="margin-bottom: 0.5rem; justify-content: center;">Аналитика</h1>
+            <p class="page-subtitle" style="justify-content: center;">Детальный обзор ваших финансов</p>
+        </div>
+
+        <div class="metrics-ribbon">
+            <div class="metric-card">
+                <div class="metric-icon income">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width: 24px; height: 24px;"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                </div>
+                <div class="metric-info">
+                    <div class="label">Всего заработано</div>
+                    <div class="value" id="stats-total-income">0 ₸</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon expense">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width: 24px; height: 24px;"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7L17 17M17 17H7M17 17V7"/></svg>
+                </div>
+                <div class="metric-info">
+                    <div class="label">Всего потрачено</div>
+                    <div class="value" id="stats-total-expense">0 ₸</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon balance">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width: 24px; height: 24px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+                </div>
+                <div class="metric-info">
+                    <div class="label">Текущий баланс</div>
+                    <div class="value" id="stats-balance">0 ₸</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="card chart-card">
+                <h3>Структура расходов</h3>
+                <div class="chart-wrapper">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+            </div>
+            <div class="card chart-card">
+                <h3>Топ-3 крупнейших покупок</h3>
+                <div id="top-expenses-container" style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid" style="margin-top: 1.5rem; margin-bottom: 3rem;">
+            <div class="card chart-card">
+                <div style="text-align: center; min-height: 55px; margin-bottom: 1rem;">
+                    <h3 style="margin-bottom: 0.5rem; margin-top: 0;">Индекс сбережений</h3>
+                    <p style="color: var(--color-muted); font-size: 0.85rem; margin: 0;">
+                        Доля сохраненных средств
+                    </p>
+                </div>
+                <div class="chart-wrapper" style="min-height: 250px; display: flex; align-items: center; justify-content: center;">
+                    <canvas id="savingsGaugeChart"></canvas>
+                </div>
+            </div>
+            <div class="card chart-card">
+                <div style="text-align: center; min-height: 55px; margin-bottom: 1rem;">
+                    <h3 style="margin-bottom: 0.5rem; margin-top: 0;">Сравнение трат</h3>
+                    <p style="color: var(--color-muted); font-size: 0.85rem; margin: 0;">
+                        Этот месяц vs Прошлый
+                    </p>
+                    <div id="mom-summary" style="display: flex; justify-content: center; align-items: center; gap: 1.5rem; margin-top: 1rem; padding: 0.75rem; background: var(--bg-main); border-radius: var(--radius-md);">
+                        <!-- populated by JS -->
+                    </div>
+                </div>
+                <div class="chart-wrapper" style="min-height: 200px;">
+                    <canvas id="momChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h4>Финансовый контроль</h4>
+                <p>Ваш современный и надежный персональный помощник для учета финансов и бюджетирования.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Контакты</h4>
+                <div class="footer-links-list">
+                    <a href="mailto:nsb.niki.nsb@gmail.com">nsb.niki.nsb@gmail.com</a>
+                    <a href="tel:+79000000000">+7 (900) 000-00-00</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Система персонального финансового планирования</p>
+        </div>
+    </footer>
+
+    <script src="js/storage.js"></script>
+    <script src="js/recurring.js"></script>
+    <script>
+        const items = getItems();
+        let totalIncome = 0;
+        let totalExpense = 0;
+
+        const expensesByCategory = {};
+
+        const allIndividualExpenses = [];
+        const currentMonthData = [0, 0, 0, 0, 0];
+        const prevMonthData = [0, 0, 0, 0, 0];
+        let currentMonthTotal = 0;
+        let prevMonthTotal = 0;
+        
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        let prevMonth = currentMonth - 1;
+        let prevYear = currentYear;
+        if (prevMonth < 0) { prevMonth = 11; prevYear--; }
+
+        items.forEach(item => {
+            const amount = parseFloat(item.amount);
+            const title = item.title.trim() || 'Без названия';
+            const dateObj = new Date(item.date);
+            const dMonth = dateObj.getMonth();
+            const dYear = dateObj.getFullYear();
+            const dDay = dateObj.getDate();
+
+            if (amount > 0) {
+                totalIncome += amount;
+            } else if (amount < 0) {
+                const absAmount = Math.abs(amount);
+                totalExpense += absAmount;
+                expensesByCategory[title] = (expensesByCategory[title] || 0) + absAmount;
+                allIndividualExpenses.push({ title: title, amount: absAmount, date: item.date });
+                
+                // For MoM Chart
+                let chunkIdx = Math.floor((dDay - 1) / 6);
+                if (chunkIdx > 4) chunkIdx = 4;
+                if (dMonth === currentMonth && dYear === currentYear) {
+                    currentMonthData[chunkIdx] += absAmount;
+                    currentMonthTotal += absAmount;
+                } else if (dMonth === prevMonth && dYear === prevYear) {
+                    prevMonthData[chunkIdx] += absAmount;
+                    prevMonthTotal += absAmount;
+                }
+            }
+        });
+
+        const balance = totalIncome - totalExpense;
+        document.getElementById("stats-total-income").innerText = totalIncome + " ₸";
+        document.getElementById("stats-total-expense").innerText = totalExpense + " ₸";
+        document.getElementById("stats-balance").innerText = balance + " ₸";
+        document.getElementById("stats-balance").style.color = balance >= 0 ? "#10b981" : "#f43f5e";
+
+        function getIconForTitle(title) {
+            const t = title.toLowerCase();
+            if (t.includes('продукт') || t.includes('еда') || t.includes('ресторан') || t.includes('кафе') || t.includes('food')) return '🍔';
+            if (t.includes('авто') || t.includes('машин') || t.includes('такси') || t.includes('бензин') || t.includes('car')) return '🚗';
+            if (t.includes('дом') || t.includes('квартир') || t.includes('аренд') || t.includes('коммунал') || t.includes('rent')) return '🏠';
+            if (t.includes('одежд') || t.includes('вещи') || t.includes('обувь') || t.includes('шопинг')) return '👕';
+            if (t.includes('игр') || t.includes('развлеч') || t.includes('кино') || t.includes('game')) return '🎮';
+            if (t.includes('билет') || t.includes('путевк') || t.includes('отель') || t.includes('отдых') || t.includes('поезд') || t.includes('travel')) return '✈️';
+            if (t.includes('телефон') || t.includes('связь') || t.includes('интернет') || t.includes('подписк')) return '📱';
+            if (t.includes('здоров') || t.includes('аптек') || t.includes('врач') || t.includes('медицин') || t.includes('больниц')) return '💊';
+            if (t.includes('спорт') || t.includes('фитнес') || t.includes('трениров') || t.includes('зал')) return '🏋️';
+            if (t.includes('подар') || t.includes('gift') || t.includes('цветы')) return '🎁';
+            if (t.includes('красот') || t.includes('косметик') || t.includes('салон') || t.includes('стрижк')) return '✂️';
+            if (t.includes('питом') || t.includes('животн') || t.includes('корм') || t.includes('собак') || t.includes('кошк')) return '🐾';
+            if (t.includes('образован') || t.includes('курс') || t.includes('учеб') || t.includes('книг')) return '📚';
+            return '💳'; // Default fallback
+        }
+
+        // Render Top 3 Expenses
+        allIndividualExpenses.sort((a, b) => b.amount - a.amount);
+        const top3 = allIndividualExpenses.slice(0, 3);
+        const topExpContainer = document.getElementById("top-expenses-container");
+        
+        if (top3.length === 0) {
+            topExpContainer.innerHTML = '<div style="text-align:center; color:var(--color-muted); padding:2rem;">Нет данных о расходах</div>';
+        } else {
+            let html = '';
+            top3.forEach((exp, i) => {
+                const percentage = Math.min(Math.round((exp.amount / totalExpense) * 100), 100);
+                const matchedIcon = getIconForTitle(exp.title);
+                
+                html += `
+                <div class="top-expense-item">
+                    <div class="top-expense-header">
+                        <div class="top-expense-title">
+                            <div class="top-expense-icon">${matchedIcon}</div>
+                            <div>
+                                <div>${exp.title}</div>
+                                <div style="font-size: 0.75rem; color: var(--color-muted);">${exp.date} • ${percentage}% от всех трат</div>
+                            </div>
+                        </div>
+                        <div class="top-expense-amount">-${exp.amount} ₸</div>
+                    </div>
+                    <div class="top-expense-bar-bg">
+                        <div class="top-expense-bar-fill" style="width: ${percentage}%"></div>
+                    </div>
+                </div>
+                `;
+            });
+            topExpContainer.innerHTML = html;
+        }
+
+        const palette = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899', '#f97316'];
+
+        function prepareDoughnutData(dataObj) {
+            let sorted = Object.entries(dataObj).sort((a, b) => b[1] - a[1]);
+            if (sorted.length > 5) {
+                const top5 = sorted.slice(0, 5);
+                const othersSum = sorted.slice(5).reduce((sum, [, val]) => sum + val, 0);
+                top5.push(['Другое', othersSum]);
+                sorted = top5;
+            }
+            if (sorted.length === 0) return { labels: ['Нет данных'], data: [1], bg: ['#e5e7eb'] };
+            
+            return {
+                labels: sorted.map(i => i[0]),
+                data: sorted.map(i => i[1]),
+                bg: sorted.map((_, i) => palette[i % palette.length])
+            };
+        }
+
+        const expData = prepareDoughnutData(expensesByCategory);
+
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        Chart.defaults.color = isDark ? '#94a3b8' : '#6b7280';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        const textColor = isDark ? '#f8fafc' : '#111827';
+        const tooltipBg = isDark ? '#1e293b' : '#ffffff';
+        const tooltipBorder = isDark ? '#334155' : '#e5e7eb';
+        const gridColor = isDark ? '#334155' : '#f3f4f6';
+
+        // Custom plugin to draw total in center
+        const centerTextPlugin = {
+            id: 'centerText',
+            beforeDraw: function(chart) {
+                if (chart.config.type !== 'doughnut') return;
+                var width = chart.width, height = chart.height, ctx = chart.ctx;
+                ctx.restore();
+                
+                // Adjust for bottom legend
+                const legendHeight = chart.legend ? chart.legend.height : 0;
+                const effectiveHeight = height - legendHeight;
+                const centerY = effectiveHeight / 2 + chart.chartArea.top;
+
+                var fontSize = (effectiveHeight / 150).toFixed(2);
+                ctx.font = "bold " + fontSize + "em Inter";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = textColor;
+                var text = totalExpense > 0 ? totalExpense + " ₸" : "0 ₸",
+                    textX = Math.round((width - ctx.measureText(text).width) / 2),
+                    textY = centerY + 5;
+                ctx.fillText(text, textX, textY);
+                
+                ctx.font = "500 " + (fontSize * 0.4).toFixed(2) + "em Inter";
+                ctx.fillStyle = "#9ca3af";
+                var label = "Расходы";
+                var labelX = Math.round((width - ctx.measureText(label).width) / 2);
+                ctx.fillText(label, labelX, textY - 25);
+                ctx.save();
+            }
+        };
+
+        const doughnutOptions = {
+            cutout: '75%',
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: { padding: 10 },
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 10, padding: 20 } },
+                tooltip: {
+                    backgroundColor: tooltipBg, titleColor: textColor, bodyColor: textColor,
+                    borderColor: tooltipBorder, borderWidth: 1, padding: 12, cornerRadius: 8, displayColors: true,
+                    callbacks: { label: function(c) {
+                        if(c.label === 'Нет данных') return ' Нет данных';
+                        return ' ' + c.label + ': ' + c.raw + ' ₸';
+                    }}
+                }
+            }
+        };
+
+        new Chart(document.getElementById("expenseChart"), {
+            type: 'doughnut',
+            data: { labels: expData.labels, datasets: [{ data: expData.data, backgroundColor: expData.bg, borderWidth: 0, hoverOffset: 8 }] },
+            options: doughnutOptions,
+            plugins: [centerTextPlugin]
+        });
+
+        // ============================================
+        // 1. Спидометр (Savings Gauge)
+        // ============================================
+        let savingsRate = 0;
+        if (totalIncome > 0) {
+            savingsRate = Math.max(0, Math.min(100, Math.round(((totalIncome - totalExpense) / totalIncome) * 100)));
+        }
+        const gaugeColor = savingsRate >= 20 ? '#10b981' : (savingsRate > 0 ? '#f59e0b' : '#ef4444');
+        const gaugeData = [savingsRate, 100 - savingsRate];
+
+        const gaugeTextPlugin = {
+            id: 'gaugeText',
+            beforeDraw: function(chart) {
+                if (chart.config.type !== 'doughnut') return;
+                var width = chart.width, height = chart.height, ctx = chart.ctx;
+                ctx.restore();
+                
+                var centerY = chart.chartArea.bottom;
+                
+                var fontSize = (width / 200).toFixed(2);
+                ctx.font = "bold " + fontSize + "em Inter";
+                ctx.textBaseline = "bottom";
+                ctx.fillStyle = gaugeColor;
+                var text = savingsRate + "%",
+                    textX = Math.round((width - ctx.measureText(text).width) / 2),
+                    textY = centerY - 15;
+                ctx.fillText(text, textX, textY);
+                
+                ctx.font = "500 " + (fontSize * 0.35).toFixed(2) + "em Inter";
+                ctx.fillStyle = "#9ca3af";
+                var label = savingsRate >= 20 ? "Отлично" : (savingsRate > 0 ? "В норме" : "Дефицит");
+                var labelX = Math.round((width - ctx.measureText(label).width) / 2);
+                ctx.fillText(label, labelX, centerY + 15);
+                ctx.save();
+            }
+        };
+
+        new Chart(document.getElementById("savingsGaugeChart"), {
+            type: 'doughnut',
+            data: { 
+                labels: ['Сбережения', 'Потрачено'], 
+                datasets: [{ 
+                    data: gaugeData, 
+                    backgroundColor: [gaugeColor, '#f3f4f6'], 
+                    borderWidth: 0,
+                    circumference: 180,
+                    rotation: 270,
+                    hoverOffset: 0
+                }] 
+            },
+            options: {
+                cutout: '80%', 
+                responsive: true, 
+                maintainAspectRatio: true,
+                aspectRatio: 1.8,
+                layout: { padding: { top: 10, bottom: 30, left: 10, right: 10 } },
+                plugins: { legend: { display: false }, tooltip: { enabled: false } }
+            },
+            plugins: [gaugeTextPlugin]
+        });
+
+        // ============================================
+        // 2. Сравнение с прошлым месяцем (MoM Bar Chart)
+        // ============================================
+        
+        const momSummary = document.getElementById('mom-summary');
+        if (momSummary) {
+            let diffPercent = 0;
+            let diffText = '0%';
+            let diffColor = 'var(--color-muted)';
+            let diffIcon = '';
+            
+            if (prevMonthTotal > 0) {
+                diffPercent = Math.round(((currentMonthTotal - prevMonthTotal) / prevMonthTotal) * 100);
+                if (diffPercent > 0) {
+                    diffText = '+' + diffPercent + '%';
+                    diffColor = 'var(--danger)'; 
+                    diffIcon = '<svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>';
+                } else if (diffPercent < 0) {
+                    diffText = diffPercent + '%';
+                    diffColor = 'var(--success)'; 
+                    diffIcon = '<svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>';
+                }
+            } else if (currentMonthTotal > 0) {
+                diffText = '+100%';
+                diffColor = 'var(--danger)';
+                diffIcon = '<svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>';
+            }
+            
+            momSummary.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; min-width: 80px;">
+                    <span style="font-size: 0.75rem; color: var(--color-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Прошлый</span>
+                    <span style="font-size: 1.1rem; font-weight: 700; color: var(--color-text);">${prevMonthTotal} ₸</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; color: ${diffColor}; font-weight: 700; background: rgba(0,0,0,0.04); padding: 0.4rem 0.8rem; border-radius: 100px; font-size: 0.9rem;">
+                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                        ${diffIcon} ${diffText}
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; min-width: 80px;">
+                    <span style="font-size: 0.75rem; color: var(--color-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Этот</span>
+                    <span style="font-size: 1.1rem; font-weight: 700; color: var(--color-text);">${currentMonthTotal} ₸</span>
+                </div>
+            `;
+        }
+
+        const momLabels = ['1-6', '7-12', '13-18', '19-24', '25+'];
+        new Chart(document.getElementById("momChart"), {
+            type: 'bar',
+            data: {
+                labels: momLabels,
+                datasets: [
+                    {
+                        label: 'Прошлый месяц',
+                        data: prevMonthData,
+                        backgroundColor: '#e5e7eb',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Текущий месяц',
+                        data: currentMonthData,
+                        backgroundColor: '#ef4444',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { color: gridColor }, border: { dash: [4, 4] } },
+                    x: { grid: { display: false }, title: { display: true, text: 'Дни месяца' } }
+                },
+                plugins: {
+                    legend: { position: 'bottom', align: 'center', labels: { usePointStyle: true, boxWidth: 10, padding: 20 } },
+                    tooltip: {
+                        backgroundColor: tooltipBg, titleColor: textColor, bodyColor: textColor,
+                        borderColor: tooltipBorder, borderWidth: 1, padding: 12, cornerRadius: 8, displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw + ' ₸';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

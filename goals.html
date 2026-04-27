@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои цели</title>
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="form.html">Добавить</a>
+            <a href="goals.html" class="active">Цели</a>
+            <a href="stats.html">Статистика</a>
+            <a href="about.html">О проекте</a>
+            <button onclick="toggleTheme()" class="theme-btn" style="background:transparent; border:none; font-size:1.2rem; cursor:pointer; display:flex; align-items:center;"><span class="theme-toggle-icon">🌙</span></button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Мои цели</h1>
+        <p class="page-subtitle">Достигайте своих финансовых целей быстрее</p>
+
+        <form id="goalForm" class="card form-wrapper">
+            <div class="form-header">Создать новую цель</div>
+            
+            <div class="input-group">
+                <label>Название цели</label>
+                <input type="text" id="goalTitle" class="input-control" placeholder="Например, Новый автомобиль" autocomplete="off">
+            </div>
+            
+            <div class="input-group">
+                <label>Сумма для накопления (₸)</label>
+                <input type="number" id="goalAmount" class="input-control" placeholder="0">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                Добавить цель
+            </button>
+        </form>
+
+        <div id="goalsList" class="goals-grid"></div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h4>Финансовый контроль</h4>
+                <p>Ваш современный и надежный персональный помощник для учета финансов и бюджетирования.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Контакты</h4>
+                <div class="footer-links-list">
+                    <a href="mailto:nsb.niki.nsb@gmail.com">nsb.niki.nsb@gmail.com</a>
+                    <a href="tel:+79000000000">+7 (900) 000-00-00</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Система персонального финансового планирования</p>
+        </div>
+    </footer>
+
+    <script src="js/storage.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/goals.js"></script>
+</body>
+
+</html>

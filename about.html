@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О проекте</title>
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="form.html">Добавить</a>
+            <a href="goals.html">Цели</a>
+            <a href="stats.html">Статистика</a>
+            <a href="about.html" class="active">О проекте</a>
+            <button onclick="toggleTheme()" class="theme-btn" style="background:transparent; border:none; font-size:1.2rem; cursor:pointer; display:flex; align-items:center;"><span class="theme-toggle-icon">🌙</span></button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">О проекте</h1>
+        <p class="page-subtitle">Система персонального финансового планирования</p>
+
+        <div class="card about-card">
+            <div class="creator-profile">
+                <div class="creator-avatar">
+                    <img src="assets/images/5408982298650154034.jpg" alt="Фото создателя">
+                </div>
+                <div class="creator-details">
+                    <h3>Никита Битехтин</h3>
+                    <p><strong>Роль:</strong> Автор проекта</p>
+                    <p><strong>Группа:</strong> 13 тис</p>
+                    <p><strong>Email:</strong> nsb.niki.nsb@gmail.com</p>
+                </div>
+            </div>
+
+            <hr class="separator">
+
+            <div class="about-section">
+                <h4>Возможности системы</h4>
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">📈</div>
+                        <h5>Учет финансов</h5>
+                        <p>Детальный и удобный контроль всех ваших доходов и расходов в одном месте.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🔄</div>
+                        <h5>Автоплатежи</h5>
+                        <p>Настройте регулярные транзакции (подписки, кредиты) — система учтет их сама.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🎯</div>
+                        <h5>Трекинг целей</h5>
+                        <p>Создавайте копилки на мечту и визуально отслеживайте шкалу вашего прогресса.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">📊</div>
+                        <h5>Аналитика</h5>
+                        <p>Красивые интерактивные графики для быстрого понимания вашего бюджета.</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="separator">
+
+            <div class="about-section">
+                <h4>Технологический стек</h4>
+                <ul>
+                    <li>HTML5 / CSS3 (Светлый Финтех UI)</li>
+                    <li>Vanilla JavaScript (ES6+)</li>
+                    <li>LocalStorage (Хранение данных)</li>
+                    <li>Chart.js (Аналитика и Графики)</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h4>Финансовый контроль</h4>
+                <p>Ваш современный и надежный персональный помощник для учета финансов и бюджетирования.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Контакты</h4>
+                <div class="footer-links-list">
+                    <a href="mailto:nsb.niki.nsb@gmail.com">nsb.niki.nsb@gmail.com</a>
+                    <a href="tel:+79000000000">+7 (900) 000-00-00</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Система персонального финансового планирования</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

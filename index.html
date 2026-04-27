@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Финансовый контроль</title>
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/style.css?v=3">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="active">Главная</a>
+            <a href="form.html">Добавить</a>
+            <a href="goals.html">Цели</a>
+            <a href="stats.html">Статистика</a>
+            <a href="about.html">О проекте</a>
+            <button onclick="toggleTheme()" class="theme-btn" style="background:transparent; border:none; font-size:1.2rem; cursor:pointer; display:flex; align-items:center;"><span class="theme-toggle-icon">🌙</span></button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Финансовый контроль</h1>
+        <p class="page-subtitle">Обзор ваших доходов и расходов</p>
+
+        <section class="dashboard-summary">
+            <div class="card summary-card">
+                <div class="stat-card">
+                    <div class="stat-icon income">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <div class="label">Доходы</div>
+                        <div class="value income" id="total-income">0 ₸</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card balance-card summary-card">
+                <div class="label">Общий баланс</div>
+                <div class="value" id="balance">0 ₸</div>
+                <div class="multi-currency-balances" id="multi-currency-balance" style="display: flex; justify-content: center; gap: 12px; margin-top: 8px; font-size: 0.85rem; font-weight: 500; color: rgba(255, 255, 255, 0.9);">
+                </div>
+            </div>
+
+            <div class="card summary-card">
+                <div class="stat-card">
+                    <div class="stat-icon expense">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><path d="M7 7L17 17M17 17H7M17 17V7"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <div class="label">Расходы</div>
+                        <div class="value expense" id="total-expense">0 ₸</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="mini-goal-widget" style="display: none;"></div>
+
+        <section class="card exchange-rates-card">
+            <h3 class="rates-title" style="text-align: center;">Курс валют (₸)</h3>
+            <div class="rates-grid" id="exchange-rates-container">
+                <div class="rate-item loading">Загрузка...</div>
+            </div>
+        </section>
+
+        <section id="recommendations-widget" class="card" style="margin-bottom: 2.5rem; padding: 1.5rem; display: none;">
+            <h3 class="rates-title" style="margin: 0 0 1.25rem 0;">
+                Ваш личный помощник по сбережению финансов
+            </h3>
+            <div id="recommendations-container" style="display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+
+        <section class="card" style="margin-bottom: 2.5rem; padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 class="rates-title" style="margin: 0;">Динамика</h3>
+                <select id="chartPeriodSelect" onchange="window.updateChartPeriod()" style="padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-card); font-family: inherit; font-size: 0.9rem; background: var(--bg-main); color: var(--color-text); cursor: pointer; outline: none;">
+                    <option value="7">За 7 дней</option>
+                    <option value="14">За 14 дней</option>
+                    <option value="30">За месяц</option>
+                    <option value="90">За 3 месяца</option>
+                    <option value="180">За полгода</option>
+                    <option value="365">За год</option>
+                    <option value="3650">За все время</option>
+                </select>
+            </div>
+            <div style="height: 300px; width: 100%;">
+                <canvas id="mainChart"></canvas>
+            </div>
+        </section>
+
+        <div class="center-btn-wrapper">
+            <button class="btn btn-primary" onclick="window.location.href='form.html'">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                Добавить операцию
+            </button>
+        </div>
+
+        <section id="list"></section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h4>Финансовый контроль</h4>
+                <p>Ваш современный и надежный персональный помощник для учета финансов и бюджетирования.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Контакты</h4>
+                <div class="footer-links-list">
+                    <a href="mailto:nsb.niki.nsb@gmail.com">nsb.niki.nsb@gmail.com</a>
+                    <a href="tel:+79000000000">+7 (900) 000-00-00</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Система персонального финансового планирования</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/recurring.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/main.js?v=5"></script>
+</body>
+</html>
